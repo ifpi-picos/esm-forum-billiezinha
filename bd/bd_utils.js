@@ -1,24 +1,34 @@
 const Database = require('better-sqlite3');
+const db = new Database('esmforum.db');
 
-var bd = new Database('./bd/esmforum.db');
-
-function reconfig(nome) {
-  bd = new Database(nome);
+// Executa comandos como INSERT, DELETE, UPDATE
+function exec(sql, params = []) {
+  try {
+    db.prepare(sql).run(params);
+  } catch (e) {
+    console.error('[exec] Erro SQL:', e.message);
+    throw e;
+  }
 }
 
-function query(query, params) {
-  return bd.prepare(query).get(params);
+// Consulta que retorna um único resultado
+function query(sql, params = []) {
+  try {
+    return db.prepare(sql).get(params);
+  } catch (e) {
+    console.error('[query] Erro SQL:', e.message);
+    throw e;
+  }
 }
 
-function queryAll(query, params) {
-  return bd.prepare(query).all(params);
+// Consulta que retorna vários resultados
+function queryAll(sql, params = []) {
+  try {
+    return db.prepare(sql).all(params);
+  } catch (e) {
+    console.error('[queryAll] Erro SQL:', e.message);
+    throw e;
+  }
 }
 
-function exec(statement, params) {
-  bd.prepare(statement).run(params);
-}
-
-exports.reconfig = reconfig;
-exports.query = query;
-exports.queryAll = queryAll;
-exports.exec = exec;
+module.exports = { exec, query, queryAll };
